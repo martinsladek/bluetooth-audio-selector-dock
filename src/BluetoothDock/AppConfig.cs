@@ -13,12 +13,6 @@ sealed class AppConfig
         WriteIndented = true
     };
 
-    private static string FilePath =>
-        Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            Strings.ConfigFolderName,
-            "config.json");
-
     public Guid? ParsedContainerId =>
         Guid.TryParse(ContainerId, out Guid id) ? id : null;
 
@@ -26,7 +20,8 @@ sealed class AppConfig
     {
         try
         {
-            string path = FilePath;
+            MigrateLegacyConfig();
+            string path = AppPaths.ConfigFile;
             if (!File.Exists(path))
                 return new AppConfig();
 
@@ -41,8 +36,29 @@ sealed class AppConfig
 
     public void Save()
     {
-        string path = FilePath;
+        string path = AppPaths.ConfigFile;
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(path, JsonSerializer.Serialize(this, JsonOptions));
+    }
+
+    private static void MigrateLegacyConfig()
+    {
+        string current = AppPaths.ConfigFile;
+        string legacy = AppPaths.LegacyConfigFile;
+        if (File.Exists(current) || !File.Exists(legacy))
+            return;
+
+        Directory.CreateDirectory(AppPaths.DataDirectory);
+        File.Move(legacy, current, overwrite: false);
+
+        try
+        {
+            string? legacyDir = Path.GetDirectoryName(legacy);
+            if (legacyDir is not null && Directory.Exists(legacyDir) && !Directory.EnumerateFileSystemEntries(legacyDir).Any())
+                Directory.Delete(legacyDir);
+        }
+        catch
+        {
+        }
     }
 }

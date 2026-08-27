@@ -17,6 +17,7 @@ static class Strings
     public static string AppName => ProductName;
 
     public static string BluetoothSettings => Czech ? "Nastavení Bluetooth" : "Bluetooth settings";
+    public static string StartWithWindows => Czech ? "Spouštět s Windows" : "Start with Windows";
     public static string About => Czech ? "O aplikaci" : "About";
     public static string Exit => Czech ? "Ukončit" : "Exit";
     public static string Ok => "OK";
@@ -25,6 +26,7 @@ static class Strings
     public static string NoDevices => Czech ? "Žádná spárovaná Bluetooth sluchátka" : "No paired Bluetooth headphones";
     public static string ConnectFailed => Czech ? "Připojení se nezdařilo" : "Could not connect";
     public static string DisconnectFailed => Czech ? "Odpojení se nezdařilo" : "Could not disconnect";
+    public static string AutostartFailed => Czech ? "Spouštění s Windows se nepodařilo nastavit" : "Could not change Start with Windows";
     public static string NotAvailable => Czech ? "není dostupné" : "unavailable";
     public static string Connected => Czech ? "připojeno" : "connected";
     public static string Disconnected => Czech ? "odpojeno" : "disconnected";
