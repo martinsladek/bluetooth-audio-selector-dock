@@ -16,7 +16,7 @@ sealed class AppConfig
     private static string FilePath =>
         Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            Strings.AppName,
+            Strings.ConfigFolderName,
             "config.json");
 
     public Guid? ParsedContainerId =>

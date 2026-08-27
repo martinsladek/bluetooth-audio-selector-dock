@@ -10,9 +10,9 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <AssemblyName>BluetoothDock</AssemblyName>
     <RootNamespace>BluetoothDock</RootNamespace>
-    <Product>BluetoothDock</Product>
-    <Description>Rychlé připojení Bluetooth sluchátek z oznamovací oblasti</Description>
-    <NeutralLanguage>cs</NeutralLanguage>
+    <Product>Bluetooth Audio Selector Dock</Product>
+    <Description>A Windows tray utility for quickly connecting and disconnecting Bluetooth headphones</Description>
+    <NeutralLanguage>en</NeutralLanguage>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 </Project>
