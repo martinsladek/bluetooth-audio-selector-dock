@@ -196,6 +196,7 @@ sealed class TrayApplicationContext : ApplicationContext
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem(Strings.BluetoothSettings, null, (_, _) => OpenBluetoothSettings()));
         _menu.Items.Add(new ToolStripSeparator());
+        _menu.Items.Add(new ToolStripMenuItem(Strings.About, null, (_, _) => ShowAbout()));
         _menu.Items.Add(new ToolStripMenuItem(Strings.Exit, null, (_, _) => Quit()));
     }
 
@@ -282,6 +283,12 @@ sealed class TrayApplicationContext : ApplicationContext
         _notifyIcon.BalloonTipText = text;
         _notifyIcon.BalloonTipIcon = ToolTipIcon.None;
         _notifyIcon.ShowBalloonTip(4000);
+    }
+
+    private void ShowAbout()
+    {
+        using var about = new AboutForm();
+        about.ShowDialog();
     }
 
     private static void OpenBluetoothSettings()

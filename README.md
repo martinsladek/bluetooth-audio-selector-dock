@@ -1,21 +1,23 @@
-# BluetoothDock
+# Bluetooth Audio Selector Dock
 
-Ikona v oznamovací oblasti Windows 10 pro rychlé připojení a odpojení Bluetooth sluchátek.
+A Windows 10 system tray utility for quickly connecting and disconnecting Bluetooth headphones.
 
-- **Levé klepnutí** — připojit / odpojit vybrané zařízení
-- **Pravé klepnutí** — výběr spárovaného Bluetooth audio zařízení
-- **Hover** — název a stav
+- **Left click** — connect or disconnect the selected device
+- **Right click** — choose which paired Bluetooth audio device the left click controls
+- **Hover** — device name and status
 
-## Spuštění
+The interface follows the Windows display language: Czech on Czech Windows, English otherwise.
 
-Přenosná binárka: `dist/BluetoothDock.exe` (self-contained, bez instalace .NET).
+## Download
 
-Sluchátka musí být už spárovaná ve Windows. Výběr zařízení se ukládá do `%AppData%\BluetoothDock\config.json`.
+**[Download here](https://github.com/martinsladek/bluetooth-audio-selector-dock/releases/latest/download/BluetoothDock.exe)** — portable Windows 10 x64 executable (self-contained, no .NET install required).
 
-## Sestavení
+Headphones must already be paired in Windows. The selected device is stored in `%AppData%\BluetoothDock\config.json`.
+
+## Building
 
 ```powershell
 dotnet publish src/BluetoothDock/BluetoothDock.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o dist
 ```
 
-Vyžaduje .NET 8 SDK. Aplikace volá Windows Core Audio (`KSPROPSETID_BtAudio`), žádné cizí Bluetooth knihovny.
+Requires the .NET 8 SDK. The app talks to Windows Core Audio (`KSPROPSETID_BtAudio`) and does not use third-party Bluetooth libraries.
