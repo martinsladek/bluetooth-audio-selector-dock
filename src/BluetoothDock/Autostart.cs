@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace BluetoothDock;
@@ -11,8 +12,14 @@ static class Autostart
 
     public static bool IsEnabled => HasRunValue && !IsDisabledByWindows;
 
+    /// <summary>
+    /// The running image cannot be deleted. Remove it after Exit instead.
+    /// </summary>
+    public static bool DeleteInstalledExeOnExit { get; private set; }
+
     public static void Enable()
     {
+        DeleteInstalledExeOnExit = false;
         InstallCurrentExe();
 
         using (RegistryKey run = Registry.CurrentUser.CreateSubKey(RunSubKey, writable: true)
@@ -36,8 +43,38 @@ static class Autostart
             approved?.DeleteValue(RunValueName, throwOnMissingValue: false);
         }
 
+        if (AppPaths.IsRunningFromInstallLocation)
+            DeleteInstalledExeOnExit = true;
+        else
+            TryDeleteInstalledExe();
+    }
+
+    public static void ApplyOnLaunch()
+    {
+        if (HasRunValue)
+        {
+            RefreshInstalledCopyIfRegistered();
+            return;
+        }
+
         if (!AppPaths.IsRunningFromInstallLocation)
             TryDeleteInstalledExe();
+    }
+
+    public static void DeleteInstalledExeAfterThisProcessExits()
+    {
+        if (!DeleteInstalledExeOnExit)
+            return;
+
+        string path = AppPaths.InstalledExe;
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = Path.Combine(Environment.SystemDirectory, "cmd.exe"),
+            Arguments = $"/c timeout /t 1 /nobreak >nul & del /f /q \"{path}\"",
+            CreateNoWindow = true,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            UseShellExecute = false
+        });
     }
 
     /// <summary>
