@@ -19,7 +19,7 @@ sealed class TrayApplicationContext : ApplicationContext
     public TrayApplicationContext()
     {
         _config = AppConfig.Load();
-        Autostart.RefreshInstalledCopyIfRegistered();
+        Autostart.ApplyOnLaunch();
 
         _sync = new Form
         {
@@ -346,6 +346,7 @@ sealed class TrayApplicationContext : ApplicationContext
         _notifyIcon.Dispose();
         _menu.Dispose();
         _sync.Dispose();
+        Autostart.DeleteInstalledExeAfterThisProcessExits();
         ExitThread();
     }
 }

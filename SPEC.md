@@ -154,8 +154,11 @@ Optional, off by default. No admin rights. Portable until the user opts in.
 
 **Disable**
 
-1. Delete the Run value and the StartupApproved value.
-2. Delete the installed EXE if this process is **not** running from that path (the running file cannot be deleted). Keep `config.json`.
+1. Delete the Run value and the StartupApproved value. Autostart is off immediately (next logon will not start the app). Keep `config.json`.
+2. Delete the installed EXE now if this process is **not** that file.
+3. If this process **is** the installed EXE, Windows will not delete a running image. Mark it for deletion and remove it ~1s after Exit via `cmd timeout & del` (the usual tiny-app uninstall trick). Re-checking Start with Windows before Exit cancels that deletion.
+
+On a later portable launch, if Run is not registered, delete any leftover installed EXE.
 
 **Checkbox state**
 
