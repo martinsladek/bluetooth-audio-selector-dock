@@ -12,7 +12,7 @@ A tiny Windows 10 desktop utility that lives only in the **notification area** (
 |---|---|
 | Product name | Bluetooth Audio Selector Dock |
 | Assembly / EXE name | `BluetoothDock.exe` |
-| Config folder | `%AppData%\BluetoothDock\` (stable, never localized) |
+| Config / install folder | `%LocalAppData%\BluetoothDock\` (stable, never localized) |
 | Author | Martin Sladek |
 | Website | https://www.martinsladek.com/ |
 | Repository | https://github.com/martinsladek/bluetooth-audio-selector-dock |
@@ -70,6 +70,7 @@ No flyout (custom popup above the taskbar). Use `ContextMenuStrip`.
    JBL Flip 5
 ─────────────────
    Bluetooth settings
+   Start with Windows  ✓
 ─────────────────
    About
    Exit
@@ -81,10 +82,11 @@ Rules:
 - Checkmark = the device that left-click toggles. Clicking another row switches the selection and saves it.
 - Show a connected suffix on connected rows. Do **not** put a separate Connect/Disconnect command in the menu — that is left-click only.
 - **Bluetooth settings** opens `ms-settings:bluetooth`.
+- **Start with Windows** is a checkable setting (see Autostart). Read live registry state when the menu opens.
 - **About** sits immediately above **Exit**.
 - **Exit** hides the tray icon and quits.
 
-If the list is empty, show a disabled “No paired Bluetooth headphones” row, then Settings / About / Exit.
+If the list is empty, show a disabled “No paired Bluetooth headphones” row, then Settings / Start with Windows / About / Exit.
 
 ### About dialog
 
@@ -118,7 +120,14 @@ Read `CultureInfo.CurrentUICulture`. If the two-letter ISO code is `cs`, use Cze
 
 ### Persistence
 
-`%AppData%\BluetoothDock\config.json`:
+Both the optional installed EXE and settings live in one per-user, per-machine folder:
+
+```
+%LocalAppData%\BluetoothDock\BluetoothDock.exe
+%LocalAppData%\BluetoothDock\config.json
+```
+
+`config.json`:
 
 ```json
 {
@@ -129,9 +138,36 @@ Read `CultureInfo.CurrentUICulture`. If the two-letter ISO code is `cs`, use Cze
 
 Store the device **container GUID**, not only the name. Keep the folder name `BluetoothDock` even if the display name changes.
 
+If an older build left `config.json` in `%AppData%\BluetoothDock\`, move it to LocalAppData on first load and remove the empty roaming folder.
+
+Do not use Roaming: the EXE is large, and the selected device GUID is machine-specific.
+
+### Autostart
+
+Optional, off by default. No admin rights. Portable until the user opts in.
+
+**Enable**
+
+1. Copy the currently running EXE to `%LocalAppData%\BluetoothDock\BluetoothDock.exe` (skip if already running from that path).
+2. Write `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` value `BluetoothDock` = quoted path to that copy.
+3. Write `HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run` value `BluetoothDock` as enabled (`0x02…`), so Task Manager / Settings → Apps → Startup agree.
+
+**Disable**
+
+1. Delete the Run value and the StartupApproved value.
+2. Delete the installed EXE if this process is **not** running from that path (the running file cannot be deleted). Keep `config.json`.
+
+**Checkbox state**
+
+Checked only if the Run value exists **and** StartupApproved does not mark it disabled (`0x03` / `0x07`). Task Manager “Disable” leaves Run in place; the menu must not show checked in that case. Checking the box again re-enables Approved.
+
+**Updates**
+
+On launch, if Run is registered and this process is a different file than the installed copy (size or last-write), overwrite the LocalAppData EXE so the next logon is not an old download.
+
 ### Process
 
-Single instance via mutex `Local\BluetoothDock.SingleInstance`. A second launch exits silently. No start-on-logon unless asked later.
+Single instance via mutex `Local\BluetoothDock.SingleInstance`. A second launch exits silently.
 
 ## Technical stack (required)
 
@@ -194,6 +230,8 @@ src/BluetoothDock/
   Program.cs
   Strings.cs
   AppConfig.cs
+  AppPaths.cs
+  Autostart.cs
   TrayApplicationContext.cs
   TrayIcons.cs
   AboutForm.cs
@@ -219,7 +257,7 @@ These were considered and rejected:
 - `BluetoothSetServiceState` / PnP disable-enable (unreliable, often needs admin)
 - Java, Python, Node, C++ toolchains
 - Putting the 70+ MB self-contained EXE into git
-- Start with Windows, installer, multiple primary devices at once
+- Installer, multiple primary devices at once
 
 No administrator rights are required.
 
@@ -228,6 +266,7 @@ No administrator rights are required.
 - Tray icon with three states, tooltip, left-click toggle, right-click menu as specified
 - About dialog with the three links
 - Czech UI only when Windows display language is Czech
+- Optional Start with Windows via HKCU Run + StartupApproved, EXE copy only when enabled
 - Self-contained `dist/BluetoothDock.exe` builds and runs without a local SDK
 - Binary published as a GitHub Release asset named `BluetoothDock.exe` so the latest-download URL stays valid
 - Source in git; `dist/` not in git

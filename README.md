@@ -11,7 +11,7 @@ The interface follows the Windows display language: Czech on Czech Windows, Engl
 ### Notes
 
 - Headphones must already be paired in Windows.
-- The selected device is stored in `%AppData%\BluetoothDock\config.json`.
+- The selected device is stored in `%LocalAppData%\BluetoothDock\config.json`.
 
 ### Download
 

@@ -19,6 +19,7 @@ sealed class TrayApplicationContext : ApplicationContext
     public TrayApplicationContext()
     {
         _config = AppConfig.Load();
+        Autostart.RefreshInstalledCopyIfRegistered();
 
         _sync = new Form
         {
@@ -195,6 +196,11 @@ sealed class TrayApplicationContext : ApplicationContext
 
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem(Strings.BluetoothSettings, null, (_, _) => OpenBluetoothSettings()));
+        _menu.Items.Add(new ToolStripMenuItem(Strings.StartWithWindows, null, (_, _) => ToggleAutostart())
+        {
+            Checked = Autostart.IsEnabled,
+            CheckOnClick = false
+        });
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem(Strings.About, null, (_, _) => ShowAbout()));
         _menu.Items.Add(new ToolStripMenuItem(Strings.Exit, null, (_, _) => Quit()));
@@ -283,6 +289,21 @@ sealed class TrayApplicationContext : ApplicationContext
         _notifyIcon.BalloonTipText = text;
         _notifyIcon.BalloonTipIcon = ToolTipIcon.None;
         _notifyIcon.ShowBalloonTip(4000);
+    }
+
+    private void ToggleAutostart()
+    {
+        try
+        {
+            if (Autostart.IsEnabled)
+                Autostart.Disable();
+            else
+                Autostart.Enable();
+        }
+        catch
+        {
+            ShowBalloon(Strings.AutostartFailed);
+        }
     }
 
     private void ShowAbout()
