@@ -220,7 +220,7 @@ COM interfaces are declared in-process (P/Invoke / `ComImport`). No NAudio, no 3
 
 Subscribe to `IMMNotificationClient` so the icon updates when Windows or the headset changes state. Debounce ~250 ms. Do not poll forever on a timer except during the busy wait.
 
-Bluetooth radio on/off: `Windows.Devices.Radios`. Call WinRT async APIs via `Task.Run` so the WinForms STA thread cannot deadlock.
+Bluetooth radio on/off: `Windows.Devices.Radios`. Keep the Bluetooth `Radio` instance alive and subscribe to `StateChanged`. Cache on/off so icon refreshes (audio endpoint noise included) do not call `GetRadiosAsync`. Left-click may query live and refresh the cache, so a missed event cannot block connect. If no Bluetooth radio is present or the API fails, treat the radio as on. Call WinRT async APIs via `Task.Run` so the WinForms STA thread cannot deadlock.
 
 ## Suggested layout
 
@@ -239,6 +239,7 @@ src/BluetoothDock/
   BluetoothAudioService.cs
   AudioCom.cs
   AudioEndpointWatcher.cs
+  BluetoothRadioWatcher.cs
 ```
 
 `.gitignore`: `bin/`, `obj/`, `dist/`, `.vs/`, `*.user`.
