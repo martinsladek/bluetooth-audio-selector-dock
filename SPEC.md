@@ -90,33 +90,31 @@ If the list is empty, show a disabled “No paired Bluetooth headphones” row, 
 
 ### About dialog
 
-Standard modal WinForms dialog (`FixedDialog`, no maximize/minimize, not in the taskbar). Product name in bold, then:
+Standard modal WinForms dialog (`FixedDialog`, no maximize/minimize, not in the taskbar). Product name stays English. Tagline, credit, and link labels come from `Strings.cs` for the current UI language.
 
-**English**
+English canonical copy:
 
 > A lightweight Windows desktop utility for quickly switching between Bluetooth audio devices.
 >
 > Developed by Martin Sladek with the help of AI models and workflows.
 
-**Czech** (only when Windows UI language is Czech)
+Clickable links (labels are localized; URLs are not):
 
-> Lehká desktopová utilita pro Windows pro rychlé přepínání mezi Bluetooth audio zařízeními.
->
-> Vytvořil Martin Sladek s pomocí AI modelů a vývojových postupů.
-
-Clickable links:
-
-| Label (en / cs) | URL |
+| Role | URL |
 |---|---|
-| Website / Web | https://www.martinsladek.com/ |
+| Website | https://www.martinsladek.com/ |
 | GitHub | https://github.com/martinsladek/bluetooth-audio-selector-dock |
-| Download / Stáhnout | https://github.com/martinsladek/bluetooth-audio-selector-dock/releases/latest/download/BluetoothDock.exe |
+| Download | https://github.com/martinsladek/bluetooth-audio-selector-dock/releases/latest/download/BluetoothDock.exe |
 
-OK button closes the dialog.
+OK button closes the dialog. Product name, GitHub, and OK stay untranslated.
 
 ### Language
 
-Read `CultureInfo.CurrentUICulture`. If the two-letter ISO code is `cs`, use Czech strings. Otherwise English. Product name stays English in both locales. Do not add other languages unless asked.
+Read `CultureInfo.CurrentUICulture.TwoLetterISOLanguageName`. UI strings live in `Strings.cs`. Supported:
+
+`en` (default), `cs`, `de`, `fr`, `es`, `pl`, `sk`
+
+Any other Windows language falls back to English. Product name stays English in every locale. README, SPEC, and GitHub stay English only.
 
 ### Persistence
 
@@ -268,7 +266,7 @@ No administrator rights are required.
 
 - Tray icon with three states, tooltip, left-click toggle, right-click menu as specified
 - About dialog with the three links
-- Czech UI only when Windows display language is Czech
+- UI localized for `en`, `cs`, `de`, `fr`, `es`, `pl`, `sk` (other Windows languages fall back to English)
 - Optional Start with Windows via HKCU Run + StartupApproved, EXE copy only when enabled
 - Self-contained `dist/BluetoothDock.exe` builds and runs without a local SDK
 - Binary published as a GitHub Release asset named `BluetoothDock.exe` so the latest-download URL stays valid

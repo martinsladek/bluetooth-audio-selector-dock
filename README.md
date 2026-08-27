@@ -6,7 +6,7 @@ A Windows 10 system tray utility for quickly connecting and disconnecting Blueto
 - **Right click** — choose which paired Bluetooth audio device the left click controls
 - **Hover** — device name and status
 
-The interface follows the Windows display language: Czech on Czech Windows, English otherwise.
+The interface follows the Windows display language (`en`, `cs`, `de`, `fr`, `es`, `pl`, `sk`). Other languages fall back to English.
 
 ### Notes
 
