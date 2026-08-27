@@ -10,6 +10,7 @@ sealed class TrayApplicationContext : ApplicationContext
     private readonly Form _sync;
     private readonly System.Windows.Forms.Timer _debounce;
     private readonly AudioEndpointWatcher? _watcher;
+    private readonly BluetoothRadioWatcher? _radioWatcher;
     private readonly AppConfig _config;
 
     private bool _busy;
@@ -61,6 +62,15 @@ sealed class TrayApplicationContext : ApplicationContext
             _watcher = null;
         }
 
+        try
+        {
+            _radioWatcher = new BluetoothRadioWatcher(_sync, QueueRefresh);
+        }
+        catch
+        {
+            _radioWatcher = null;
+        }
+
         RefreshPresentation();
     }
 
@@ -72,9 +82,10 @@ sealed class TrayApplicationContext : ApplicationContext
         if (_busy)
             return;
 
-        if (!BluetoothAudioService.IsBluetoothRadioOn())
+        if (!RadioIsOn(live: true))
         {
             ShowBalloon(Strings.BluetoothOff);
+            RefreshPresentation();
             return;
         }
 
@@ -237,6 +248,14 @@ sealed class TrayApplicationContext : ApplicationContext
         return devices.FirstOrDefault(d => d.ContainerId == id);
     }
 
+    private bool RadioIsOn(bool live)
+    {
+        if (_radioWatcher is not null)
+            return live ? _radioWatcher.RefreshFromOs() : _radioWatcher.IsOn;
+
+        return BluetoothAudioService.IsBluetoothRadioOn();
+    }
+
     private void QueueRefresh()
     {
         _debounce.Stop();
@@ -254,7 +273,7 @@ sealed class TrayApplicationContext : ApplicationContext
             return;
         }
 
-        if (!BluetoothAudioService.IsBluetoothRadioOn())
+        if (!RadioIsOn(live: false))
         {
             _notifyIcon.Icon = TrayIcons.Disconnected;
             _notifyIcon.Text = TruncateTip(Strings.BluetoothOff);
@@ -342,6 +361,7 @@ sealed class TrayApplicationContext : ApplicationContext
         _debounce.Stop();
         _debounce.Dispose();
         _watcher?.Dispose();
+        _radioWatcher?.Dispose();
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         _menu.Dispose();
