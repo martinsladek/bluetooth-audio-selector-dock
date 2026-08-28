@@ -8,7 +8,7 @@ GitHub Actions publishes `BluetoothDock.exe` when a tag matching `v*` is pushed 
 
 To ship a build: commit to `main`, then `git tag vX.Y.Z` and `git push origin vX.Y.Z`.
 
-Local `dotnet publish` is fine for trying the tray app on this machine.
+After changes that affect the running app, `dotnet publish` to `dist/` and restart the tray process (`BluetoothDock.exe`) so the user can try it locally. That local EXE is only for this machine — never attach it to a GitHub Release.
 
 ## Build
 
