@@ -25,6 +25,8 @@ dotnet publish src/BluetoothDock/BluetoothDock.csproj -c Release -r win-x64 --se
 
 Requires the .NET 8 SDK. The app talks to Windows Core Audio (`KSPROPSETID_BtAudio`) and does not use third-party Bluetooth libraries.
 
+Pushing a version tag (`v0.2.1`, `v1.0.0`, …) runs GitHub Actions: it publishes `BluetoothDock.exe` and creates a GitHub Release. The download link above always follows the latest non-prerelease Release.
+
 ### Recreate from the idea
 
 [SPEC.md](SPEC.md) is the full product contract. Give that file to a coding agent and ask it to implement the specification.

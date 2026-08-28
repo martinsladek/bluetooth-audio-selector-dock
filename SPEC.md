@@ -192,7 +192,7 @@ The published EXE must run on a PC that has no .NET SDK and no extra runtimes in
 
 Do not use trimming (`PublishTrimmed=false`) — COM interop will break.
 
-No installer in v1. Distribution of the binary is **GitHub Releases**, never git.
+No installer in v1. Distribution of the binary is **GitHub Releases**, never git. A Release is created by GitHub Actions on `windows-latest` when a tag matching `v*` is pushed (`BluetoothDock.exe` asset). The `/releases/latest/download/BluetoothDock.exe` URL then points at that Release.
 
 ## Connecting and disconnecting (the hard part)
 
