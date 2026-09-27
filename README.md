@@ -4,7 +4,7 @@ A Windows 10 system tray utility for quickly connecting and disconnecting Blueto
 
 - **Left click** — connect or disconnect the selected device
 - **Right click** — choose which paired Bluetooth audio device the left click controls
-- **Hover** — device name and status
+- **Hover** — device name, status, and battery percentage when Windows exposes it
 
 The interface follows the Windows display language (`en`, `cs`, `de`, `fr`, `es`, `pl`, `sk`). Other languages fall back to English.
 

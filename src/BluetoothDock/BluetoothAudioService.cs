@@ -12,6 +12,7 @@ sealed class BluetoothAudioDevice
     public required string Name { get; init; }
     public required bool IsConnected { get; init; }
     public required IReadOnlyList<string> EndpointIds { get; init; }
+    public byte? BatteryPercent { get; init; }
 }
 
 static class BluetoothAudioService
@@ -56,13 +57,16 @@ static class BluetoothAudioService
             ComRelease.Once(enumerator);
         }
 
+        IReadOnlyDictionary<Guid, byte> batteries = BluetoothBattery.ReadLevels();
+
         return groups.Values
             .Select(g => new BluetoothAudioDevice
             {
                 ContainerId = g.ContainerId,
                 Name = g.Name,
                 IsConnected = g.IsConnected,
-                EndpointIds = g.EndpointIds
+                EndpointIds = g.EndpointIds,
+                BatteryPercent = batteries.TryGetValue(g.ContainerId, out byte percent) ? percent : null
             })
             .OrderBy(d => d.Name, StringComparer.CurrentCultureIgnoreCase)
             .ToList();

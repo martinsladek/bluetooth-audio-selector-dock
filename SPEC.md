@@ -39,6 +39,7 @@ Native tooltip only. No menu on hover. `NotifyIcon.Text` is limited to 63 charac
 Examples:
 
 - `{device name} — connected`
+- `{device name} — connected · 72%` (when Windows exposes battery for that device)
 - `{device name} — disconnected`
 - `{device name} — connecting…`
 - `{device name} — disconnecting…`
@@ -66,7 +67,7 @@ Selecting a device in the menu only changes which device left-click controls. It
 No flyout (custom popup above the taskbar). Use `ContextMenuStrip`.
 
 ```
-✓  Sony WH-1000XM4  · connected
+✓  Sony WH-1000XM4  · connected · 72%
    JBL Flip 5
 ─────────────────
    Bluetooth settings
@@ -80,7 +81,7 @@ Rules:
 
 - List **paired Bluetooth audio devices**, not “currently in range” (Windows often cannot know range until a connect attempt).
 - Checkmark = the device that left-click toggles. Clicking another row switches the selection and saves it.
-- Show a connected suffix on connected rows. Do **not** put a separate Connect/Disconnect command in the menu — that is left-click only.
+- Show a connected suffix on connected rows. When Windows exposes a battery percentage for that device (same DEVPKEY Settings uses on the Hands-Free / BTHENUM node), append ` · {n}%` after the connected suffix. Omit battery when unknown or disconnected. Do **not** put a separate Connect/Disconnect command in the menu — that is left-click only.
 - **Bluetooth settings** opens `ms-settings:bluetooth`.
 - **Start with Windows** is a checkable setting (see Autostart). Read live registry state when the menu opens.
 - **About** sits immediately above **Exit**.
@@ -215,6 +216,7 @@ User-mode path (same idea as [ToothTray](https://github.com/m2jean/ToothTray), i
 6. Connected = any endpoint in the group is `DEVICE_STATE_ACTIVE`.
 7. Connect/disconnect: send the oneshot property to **all** KS controls in the container (A2DP and HFP).
 8. After the request, poll for up to ~8 seconds until state matches. Busy icon meanwhile. On timeout, balloon “Could not connect” / “Could not disconnect”.
+9. Battery percentage: read `DEVPKEY_Bluetooth_BatteryLevel` (`{104EA319-6EE2-4701-BD47-8DDBF425BBE5} 2`, byte) from present `BTHENUM` nodes via Configuration Manager (`CM_Get_DevNode_PropertyW`). Match to audio devices by `DEVPKEY_Device_ContainerId`. Same value Settings shows; omit when the property is absent.
 
 COM interfaces are declared in-process (P/Invoke / `ComImport`). No NAudio, no 32feet, no random GitHub Bluetooth helpers.
 
@@ -237,6 +239,7 @@ src/BluetoothDock/
   TrayIcons.cs
   AboutForm.cs
   BluetoothAudioService.cs
+  BluetoothBattery.cs
   AudioCom.cs
   AudioEndpointWatcher.cs
   BluetoothRadioWatcher.cs
