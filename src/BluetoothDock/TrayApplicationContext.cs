@@ -196,9 +196,7 @@ sealed class TrayApplicationContext : ApplicationContext
         {
             foreach (BluetoothAudioDevice device in devices)
             {
-                string label = device.IsConnected
-                    ? $"{device.Name}  · {Strings.Connected}"
-                    : device.Name;
+                string label = FormatDeviceLabel(device);
 
                 var item = new ToolStripMenuItem(label)
                 {
@@ -304,8 +302,27 @@ sealed class TrayApplicationContext : ApplicationContext
         }
 
         _notifyIcon.Icon = selected.IsConnected ? TrayIcons.Connected : TrayIcons.Disconnected;
-        string state = selected.IsConnected ? Strings.Connected : Strings.Disconnected;
-        _notifyIcon.Text = TruncateTip($"{selected.Name} — {state}");
+        _notifyIcon.Text = TruncateTip(FormatDeviceTooltip(selected));
+    }
+
+    private static string FormatDeviceLabel(BluetoothAudioDevice device)
+    {
+        if (!device.IsConnected)
+            return device.Name;
+
+        if (device.BatteryPercent is byte percent)
+            return $"{device.Name}  · {Strings.Connected} · {percent}%";
+
+        return $"{device.Name}  · {Strings.Connected}";
+    }
+
+    private static string FormatDeviceTooltip(BluetoothAudioDevice device)
+    {
+        string state = device.IsConnected ? Strings.Connected : Strings.Disconnected;
+        if (device.IsConnected && device.BatteryPercent is byte percent)
+            return $"{device.Name} — {state} · {percent}%";
+
+        return $"{device.Name} — {state}";
     }
 
     private void ShowBalloon(string text)
